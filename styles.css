@@ -1,8 +1,308 @@
-/*
+.graph-plus-view {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+/* Vignette spans the whole tab, so the tab edge reads as the frame. */
+.graph-plus-view::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0.09;
+	background: radial-gradient(circle at 50% 45%, transparent 70%, var(--text-muted) 100%);
+}
 
-If your plugin does not need CSS, delete this file.
+.graph-plus-toolbar {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-3);
+	padding: var(--size-4-2) var(--size-4-3);
+	color: var(--text-normal);
+}
 
-*/
+.graph-plus-crumb {
+	background: none;
+	border: none;
+	box-shadow: none;
+	padding: 0;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.graph-plus-crumb:hover {
+	color: var(--text-normal);
+}
+
+.graph-plus-crumb:disabled {
+	color: var(--text-normal);
+	cursor: default;
+}
+
+.graph-plus-crumb-sep {
+	color: var(--text-faint);
+}
+
+.graph-plus-toolbar button {
+	color: var(--text-normal);
+}
+
+.graph-plus-hint {
+	margin-left: auto;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.graph-plus-canvas {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	flex: 1 1 auto;
+	min-height: 320px;
+	overflow: hidden;
+	touch-action: none;
+	background: transparent;
+	cursor: default;
+}
+
+.graph-plus-canvas.is-panning {
+	cursor: grabbing;
+}
+
+.graph-plus-folder-action,
+.graph-plus-inner-cloud-title {
+	cursor: zoom-in;
+}
+
+.graph-plus-folder-action:hover .graph-plus-folder-title,
+.graph-plus-folder-action:focus-visible .graph-plus-folder-title,
+.graph-plus-inner-cloud-title:hover,
+.graph-plus-inner-cloud-title:focus-visible {
+	fill: var(--interactive-accent);
+}
+
+.graph-plus-folder-action:focus-visible,
+.graph-plus-inner-cloud-title:focus-visible {
+	outline: 2px solid var(--interactive-accent);
+	outline-offset: 4px;
+}
+
+.graph-plus-folder-title {
+	fill: var(--text-muted);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-anchor: middle;
+}
+
+.graph-plus-folder-underline {
+	fill: var(--interactive-accent);
+	opacity: 0;
+}
+
+.graph-plus-folder-action:hover .graph-plus-folder-underline,
+.graph-plus-folder-action:focus-visible .graph-plus-folder-underline {
+	opacity: 1;
+}
+
+.graph-plus-group-title {
+	fill: var(--text-muted);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	text-anchor: middle;
+}
+
+.graph-plus-note {
+	cursor: pointer;
+	transition: opacity 120ms ease;
+}
+
+.graph-plus-note.is-dragging {
+	cursor: grabbing;
+}
+
+.graph-plus-canvas > g {
+	transition: opacity 260ms ease;
+}
+
+.graph-plus-canvas > g.is-arranging {
+	opacity: 0.7;
+}
+
+.graph-plus-filter {
+	margin-left: var(--size-4-4);
+	width: 150px;
+}
+
+.graph-plus-note.is-filtered-out,
+.graph-plus-cloud.is-filtered-out,
+.graph-plus-parent-boundary.is-filtered-out,
+.graph-plus-inner-cloud.is-filtered-out {
+	opacity: 0.1;
+}
+
+.graph-plus-inner-cloud {
+	pointer-events: none;
+}
+
+.graph-plus-parent-boundary {
+	fill: none;
+	stroke: var(--interactive-accent);
+	stroke-width: 1.5;
+	vector-effect: non-scaling-stroke;
+	pointer-events: none;
+}
+
+.graph-plus-inner-cloud-boundary {
+	fill: var(--background-primary);
+	fill-opacity: 0.12;
+	stroke: var(--interactive-accent);
+	stroke-width: 2;
+	stroke-dasharray: 8 6;
+	vector-effect: non-scaling-stroke;
+}
+
+.graph-plus-inner-cloud-title {
+	pointer-events: auto;
+	fill: var(--text-normal);
+	font-size: 13px;
+	font-weight: 700;
+	paint-order: stroke;
+	stroke: var(--background-primary);
+	stroke-width: 4px;
+	stroke-linejoin: round;
+	text-anchor: middle;
+}
+
+.graph-plus-group-title.is-filtered-out {
+	opacity: 0.15;
+}
+
+/* Marching dashes: the dotted ring travels while you hover a node. */
+@keyframes graph-plus-march {
+	to {
+		stroke-dashoffset: -12;
+	}
+}
+
+/* Node colours follow Obsidian's own graph theme variables. */
+.graph-plus-note-dot {
+	fill: var(--graph-node, var(--text-muted));
+	stroke: var(--graph-line, var(--background-modifier-border));
+	stroke-width: 1.5;
+	transform-box: fill-box;
+	transform-origin: center;
+	transition: fill 120ms ease, stroke 120ms ease, transform 120ms ease;
+}
+
+.graph-plus-note-warmth {
+	fill: var(--color-yellow);
+	pointer-events: none;
+	transition: opacity 120ms ease;
+}
+
+.graph-plus-note.is-stale .graph-plus-note-dot {
+	stroke-dasharray: 3 3;
+}
+
+.graph-plus-note-label {
+	fill: var(--graph-text, var(--text-normal));
+	font-size: 13px;
+	opacity: var(--label-alpha, 1);
+	transition: opacity 120ms ease;
+}
+
+.graph-plus-note.is-hovered .graph-plus-note-label,
+.graph-plus-note.is-neighbor .graph-plus-note-label {
+	opacity: 1;
+}
+
+.graph-plus-note.is-recent .graph-plus-note-label {
+	font-weight: 700;
+}
+
+.graph-plus-note.is-recent .graph-plus-note-dot {
+	fill: var(--color-yellow);
+	stroke: var(--text-normal);
+	stroke-width: 2.5;
+	transform: scale(1.35);
+}
+
+.graph-plus-note.is-neighbor .graph-plus-note-dot {
+	fill: var(--graph-node-focused, var(--interactive-accent));
+	stroke: var(--graph-node-focused, var(--interactive-accent));
+}
+
+.graph-plus-note.is-hovered .graph-plus-note-dot {
+	fill: var(--graph-node-focused, var(--interactive-accent));
+	stroke: var(--graph-node-focused, var(--interactive-accent));
+	stroke-dasharray: 3 3;
+	animation: graph-plus-march 0.9s linear infinite;
+	transform: scale(1.3);
+}
+
+/* Dragging wins over hover: a solid ring, no marching dashes. */
+.graph-plus-note.is-dragging .graph-plus-note-dot {
+	stroke: var(--interactive-accent);
+	stroke-width: 3;
+	stroke-dasharray: none;
+	animation: none;
+}
+
+.graph-plus-note.is-hovered .graph-plus-note-warmth,
+.graph-plus-note.is-neighbor .graph-plus-note-warmth {
+	opacity: 0;
+}
+
+.graph-plus-note:focus .graph-plus-note-dot {
+	stroke: var(--interactive-accent);
+	stroke-width: 2.5;
+}
+
+.graph-plus-note.is-dimmed {
+	opacity: var(--dim-opacity, 0.55);
+}
+
+.graph-plus-edge {
+	stroke: var(--graph-line, var(--text-muted));
+	stroke-width: 1;
+	transition: opacity 120ms ease;
+}
+
+.graph-plus-edge.is-active {
+	stroke: var(--text-normal);
+	stroke-width: 2;
+}
+
+.graph-plus-edge.is-dimmed {
+	opacity: calc(var(--dim-opacity, 0.55) * 0.6);
+}
+
+.graph-plus-empty {
+	fill: var(--text-muted);
+	font-size: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.graph-plus-canvas > g,
+	.graph-plus-note,
+	.graph-plus-note-dot,
+	.graph-plus-note-warmth,
+	.graph-plus-note-label,
+	.graph-plus-edge {
+		transition: none;
+	}
+
+	.graph-plus-note.is-hovered .graph-plus-note-dot {
+		animation: none;
+	}
+}

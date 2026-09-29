@@ -18,5 +18,8 @@ main.js
 # obsidian
 data.json
 
+# Local planning notes
+/specs/
+
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store

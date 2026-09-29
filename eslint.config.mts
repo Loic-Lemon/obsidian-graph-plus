@@ -29,4 +29,11 @@ export default defineConfig(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		files: ['scripts/**/*.mjs'],
+		rules: {
+			'obsidianmd/no-nodejs-modules': 'off',
+			'obsidianmd/rule-custom-message': 'off',
+		},
+	},
 );
