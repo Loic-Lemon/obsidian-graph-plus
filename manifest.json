@@ -1,11 +1,8 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "graph-plus",
+	"name": "Graph Plus",
 	"version": "1.0.0",
 	"minAppVersion": "1.0.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "A folder-aware, zoomable graph view for Obsidian.",
 	"isDesktopOnly": false
 }
